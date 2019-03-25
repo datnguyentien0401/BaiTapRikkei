@@ -38,6 +38,7 @@ public class loginProcess extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
+        
         String username = request.getParameter("username");
         String pass = request.getParameter("password");
 
@@ -49,6 +50,13 @@ public class loginProcess extends HttpServlet {
             try {
                 ps = cnn.prepareStatement("select UserName, Password from Account");
                 rs = ps.executeQuery();
+                if (username == null || username.isEmpty()) {
+                    response.sendRedirect("login.jsp");
+                }
+                if (pass == null ) {
+                    response.sendRedirect("login.jsp");
+                }
+                int found=0;
                 while (rs.next()) {
                     if (username.equals(rs.getString("UserName"))) {
                         if (pass.equals(rs.getString("Password"))) {
@@ -56,8 +64,14 @@ public class loginProcess extends HttpServlet {
                         } else {
                             response.sendRedirect("login.jsp");
                         }
+                        found=1;
+                        break;
                     }
+                    
                 }
+                if(found==0)
+                    response.sendRedirect("login.jsp");
+
             } catch (SQLException ex) {
                 Logger.getLogger(loginProcess.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
